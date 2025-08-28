@@ -1,0 +1,442 @@
+<!-- public/index.html -->
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Haze Cove Resort — Book (Single Page)</title>
+  <meta name="description" content="Single-page booking app — Lavender Blue Resort. Demo with Google Sheets backend." />
+  <style>
+    :root{
+      --lav1:#e9ddff;
+      --lav2:#cdb7ff;
+      --blue1:#8fb4ff;
+      --bg:#f6f8ff;
+      --card:#ffffff;
+      --muted:#6b7280;
+      --accent:#7b68ee;
+      --accent-dark:#5a3fbf;
+      --radius:12px;
+    }
+    *{box-sizing:border-box}
+    body{font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto; margin:0;background:linear-gradient(180deg,var(--bg),#eef2ff); color:#0f1724;}
+    header{background:linear-gradient(135deg,var(--lav1),var(--lav2)); padding:28px 18px; text-align:center}
+    header h1{margin:10px 0;font-size:1.8rem;color:var(--accent-dark)}
+    header p{margin:6px 0;color:var(--muted)}
+    .container{width:min(1100px,94%);margin:20px auto}
+    nav{display:flex;justify-content:space-between;align-items:center;padding:12px 18px;background:linear-gradient(90deg,var(--accent),var(--blue1));border-radius:999px;color:white;box-shadow:0 8px 30px rgba(0,0,0,0.08)}
+    nav .brand{font-weight:800}
+    nav .links{display:flex;gap:14px}
+    nav a{color:white;text-decoration:none;font-weight:600;padding:8px 10px;border-radius:10px}
+    nav a:hover{background:rgba(255,255,255,0.08)}
+    main{display:grid;grid-template-columns:1fr 520px;gap:20px;align-items:start;margin-top:18px}
+    .card{background:var(--card);border-radius:var(--radius);padding:16px;box-shadow:0 8px 24px rgba(16,24,40,0.06)}
+    .lead{color:var(--muted);margin-top:6px}
+    h2.section{margin-bottom:10px;color:var(--accent-dark)}
+    /* booking form */
+    form{display:flex;flex-direction:column;gap:10px}
+    label{font-size:0.9rem;color:var(--muted)}
+    input[type="date"],select,input[type="number"],input[type="text"],input[type="email"]{padding:10px;border-radius:8px;border:1px solid #e6e9f2;width:100%;box-sizing: border-box;}
+    .row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+    .grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px}
+    .btn{background:linear-gradient(90deg,var(--accent),var(--blue1));color:white;padding:10px 12px;border-radius:10px;border:0;font-weight:700;cursor:pointer}
+    .btn.secondary{background:transparent;border:1px solid rgba(15,23,36,0.06);color:var(--accent-dark)}
+    .muted{color:var(--muted)}
+    .price-total{font-weight:800;font-size:1.2rem;color:var(--accent-dark)}
+    .status{margin-top:6px}
+    footer{margin-top:24px;text-align:center;color:var(--muted);padding:18px}
+    /* responsive */
+    @media (max-width:980px){
+      main{grid-template-columns:1fr; padding:0 12px}
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Haze Cove Resort</h1>
+    <p class="lead">Relaxation, luxury, and adventure awaits, where every moment is a perfect escape</p>
+  </header>
+
+  <div class="container">
+    <nav>
+      <div class="brand">Haze Cove Resort</div>
+      <div class="links">
+        <a href="#home">Home</a>
+        <a href="#rooms">Rooms</a>
+        <a href="#compare">Compare</a>
+        <a href="#book">Book</a>
+      </div>
+    </nav>
+
+    <main>
+      <!-- Left: Info & Rooms -->
+      <section>
+        <div class="card" id="home">
+          <h2 class="section">Welcome</h2>
+          <p class="muted">Use the booking panel to check availability and make a booking.</p>
+        </div>
+
+        <div class="card" id="rooms" style="margin-top:12px">
+          <h2 class="section">Rooms & Rate Plans</h2>
+          <div style="display:flex;gap:12px;flex-wrap:wrap;margin-top:10px">
+            <div style="min-width:220px">
+              <h3>Deluxe Sea View</h3>
+              <div class="muted">Single: $120 • Double: $170</div>
+              <div style="margin-top:8px" class="muted">Extras: +$35/person, +$15/child</div>
+            </div>
+            <div style="min-width:220px">
+              <h3>Family Suite</h3>
+              <div class="muted">Single: $180 • Double: $240</div>
+              <div style="margin-top:8px" class="muted">Extras: +$40/person, +$18/child</div>
+            </div>
+            <div style="min-width:220px">
+              <h3>Garden Room</h3>
+              <div class="muted">Single: $90 • Double: $130</div>
+              <div style="margin-top:8px" class="muted">Extras: +$30/person, +$12/child</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card" id="compare" style="margin-top:12px">
+          <h2 class="section">Room Comparison</h2>
+          <div class="muted">Compare features quickly. (Client-side only in this demo.)</div>
+          <div style="margin-top:10px" id="compareBox"></div>
+        </div>
+      </section>
+
+      <!-- Right: Booking Panel -->
+      <aside>
+        <div class="card" id="book">
+          <h2 class="section">Book Your Stay</h2>
+
+          <form id="bookingForm" novalidate>
+            <div class="row">
+              <div>
+                <label for="checkin">Check-in</label>
+                <input id="checkin" type="date" required />
+                <div id="errCheckin" class="muted" style="font-size:0.9rem"></div>
+              </div>
+              <div>
+                <label for="checkout">Check-out</label>
+                <input id="checkout" type="date" required />
+                <div id="errCheckout" class="muted" style="font-size:0.9rem"></div>
+              </div>
+            </div>
+
+            <div style="margin-top:6px">
+              <label for="roomType">Room Type</label>
+              <select id="roomType" required>
+                <option value="">Select a room</option>
+                <option value="deluxe">Deluxe Sea View</option>
+                <option value="family">Family Suite</option>
+                <option value="garden">Garden Room</option>
+              </select>
+            </div>
+
+            <div class="grid3" style="margin-top:6px">
+              <div>
+                <label for="ratePlan">Rate Plan</label>
+                <select id="ratePlan">
+                  <option value="without_breakfast">Without Breakfast</option>
+                  <option value="with_breakfast">With Breakfast (+ per person)</option>
+                </select>
+              </div>
+              <div>
+                <label for="adults">Adults</label>
+                <input id="adults" type="number" min="1" value="2" />
+              </div>
+              <div>
+                <label for="children">Children</label>
+                <input id="children" type="number" min="0" value="0" />
+              </div>
+              <div>
+                <label for="extraBed">Extra Beds</label>
+                <input id="extraBed" type="number" min="0" value="0" />
+              </div>
+            </div>
+
+            <hr style="margin:12px 0" />
+
+            <div>
+              <label for="guestName">Full Name</label>
+              <input id="guestName" type="text" placeholder="Your name" required />
+            </div>
+            <div>
+              <label for="guestEmail">Email</label>
+              <input id="guestEmail" type="email" placeholder="you@example.com" required />
+            </div>
+
+            <div style="display:flex;gap:10px;margin-top:8px;align-items:center">
+              <button class="btn" type="button" id="btnCheck">Check Availability</button>
+              <button class="btn secondary" type="button" id="btnPreview">Preview Price</button>
+            </div>
+
+            <div class="status" id="statusMsg"></div>
+
+            <div style="margin-top:10px" id="priceBox"></div>
+
+            <div style="margin-top:10px;display:flex;gap:10px">
+              <button class="btn" type="submit" id="btnBook">Confirm Booking</button>
+              <button class="btn secondary" type="button" id="btnReset">Reset</button>
+            </div>
+
+            <div id="bookResult" style="margin-top:10px"></div>
+          </form>
+        </div>
+      </aside>
+    </main>
+
+    <footer>
+      © <span id="year"></span> Haze Cove Resort — Demo.
+    </footer>
+  </div>
+
+  <script>
+    /* =========================
+       Client-side data + helpers
+    ========================= */
+    const roomTypes = {
+      deluxe: { id:'deluxe', title:'Deluxe Sea View', baseSingle:120, baseDouble:170, extraPerson:35, extraChild:15, extraBed:20 },
+      family: { id:'family', title:'Family Suite', baseSingle:180, baseDouble:240, extraPerson:40, extraChild:18, extraBed:25 },
+      garden: { id:'garden', title:'Garden Room', baseSingle:90, baseDouble:130, extraPerson:30, extraChild:12, extraBed:18 }
+    };
+    const ratePlans = {
+      with_breakfast: { id:'with_breakfast', title:'With Breakfast', perPerson:12 },
+      without_breakfast: { id:'without_breakfast', title:'Without Breakfast', perPerson:0 }
+    };
+
+    // Elements
+    const checkinEl = document.getElementById('checkin');
+    const checkoutEl = document.getElementById('checkout');
+    const roomTypeEl = document.getElementById('roomType');
+    const ratePlanEl = document.getElementById('ratePlan');
+    const adultsEl = document.getElementById('adults');
+    const childrenEl = document.getElementById('children');
+    const extraBedEl = document.getElementById('extraBed');
+    const guestNameEl = document.getElementById('guestName');
+    const guestEmailEl = document.getElementById('guestEmail');
+
+    const btnCheck = document.getElementById('btnCheck');
+    const btnPreview = document.getElementById('btnPreview');
+    const btnBook = document.getElementById('btnBook');
+    const btnReset = document.getElementById('btnReset');
+
+    const statusMsg = document.getElementById('statusMsg');
+    const priceBox = document.getElementById('priceBox');
+    const bookResult = document.getElementById('bookResult');
+
+    document.getElementById('year').textContent = new Date().getFullYear();
+
+    /* =========================
+       Simple date helpers
+    ========================= */
+    function toKey(d) {
+      const dt = new Date(d);
+      if (isNaN(dt)) return null;
+      const y = dt.getFullYear();
+      const m = String(dt.getMonth()+1).padStart(2,'0');
+      const day = String(dt.getDate()).padStart(2,'0');
+      return `${y}-${m}-${day}`;
+    }
+    function daysBetween(a,b) {
+      const da = new Date(a); const db = new Date(b);
+      return Math.ceil((db - da) / (1000*60*60*24));
+    }
+    function rangesOverlap(aStart, aEnd, bStart, bEnd) {
+      return (new Date(aStart) < new Date(bEnd)) && (new Date(bStart) < new Date(aEnd));
+    }
+
+    /* =========================
+       Price calculation (client-side)
+    ========================= */
+    function calculatePrice({roomId, checkin, checkout, adults, children, extraBed, ratePlanId}) {
+      const room = roomTypes[roomId];
+      if(!room) return { ok:false, message:'Select a room type' };
+      const ci = toKey(checkin);
+      const co = toKey(checkout);
+      if(!ci || !co) return { ok:false, message:'Select valid dates' };
+      if(new Date(co) <= new Date(ci)) return { ok:false, message:'Check-out must be after check-in' };
+      const nights = daysBetween(ci, co);
+      const occupancyKey = (adults >= 2) ? 'baseDouble' : 'baseSingle';
+      const baseNight = room[occupancyKey] || room.baseDouble || room.baseSingle;
+      let subtotal = 0;
+      const breakdown = [];
+      for(let i=0;i<nights;i++){
+        const date = new Date(ci);
+        date.setDate(date.getDate() + i);
+        const day = date.getDay();
+        let nightly = baseNight;
+        if(day === 5 || day === 6) nightly *= 1.1; // weekend +10%
+        const extras = (Math.max(0, adults - 2) * room.extraPerson) + (children * room.extraChild) + (extraBed * room.extraBed);
+        const ratePlan = ratePlans[ratePlanId] || ratePlans['without_breakfast'];
+        const persons = adults + children;
+        const breakfastAdd = ratePlan.perPerson * persons;
+        const nightlyTotal = nightly + extras + breakfastAdd;
+        subtotal += nightlyTotal;
+        breakdown.push({date: date.toISOString().slice(0,10), nightly: nightlyTotal});
+      }
+      const serviceFee = subtotal * 0.05;
+      const total = subtotal + serviceFee;
+      return { ok:true, nights, subtotal, serviceFee, total, breakdown };
+    }
+
+    function renderPriceResult(res) {
+      if(!res.ok) {
+        priceBox.innerHTML = `<div class="muted">${res.message}</div>`;
+        return;
+      }
+      priceBox.innerHTML = `
+        <div class="muted">Nights: ${res.nights}</div>
+        <div class="muted">Subtotal: $${res.subtotal.toFixed(2)}</div>
+        <div class="muted">Service (5%): $${res.serviceFee.toFixed(2)}</div>
+        <div class="price-total">Total: $${res.total.toFixed(2)}</div>
+      `;
+    }
+
+    /* =========================
+       Availability check -> calls backend /api/check
+    ========================= */
+    async function checkAvailability() {
+      statusMsg.textContent = ''; bookResult.textContent = '';
+      const payload = {
+        roomType: roomTypeEl.value,
+        checkin: checkinEl.value,
+        checkout: checkoutEl.value
+      };
+      if(!payload.roomType || !payload.checkin || !payload.checkout) {
+        statusMsg.textContent = 'Select room and dates first.';
+        return;
+      }
+      statusMsg.textContent = 'Checking availability...';
+      try {
+        const resp = await fetch('http://localhost:5000/api/check', {
+
+          method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(payload)
+        });
+        const data = await resp.json();
+        if(data.ok) {
+          statusMsg.innerHTML = `<span style="color:green">${data.message}</span>`;
+        } else {
+          statusMsg.innerHTML = `<span style="color:#b91c1c">${data.message}</span>`;
+        }
+      } catch (err) {
+        statusMsg.innerHTML = `<span style="color:#b91c1c">Server error: ${err.message}</span>`;
+      }
+    }
+
+    /* =========================
+       Preview price button
+    ========================= */
+    btnPreview.addEventListener('click', (e) => {
+      const payload = {
+        roomId: roomTypeEl.value,
+        checkin: checkinEl.value,
+        checkout: checkoutEl.value,
+        adults: Number(adultsEl.value) || 1,
+        children: Number(childrenEl.value) || 0,
+        extraBed: Number(extraBedEl.value) || 0,
+        ratePlanId: ratePlanEl.value
+      };
+      const res = calculatePrice(payload);
+      renderPriceResult(res);
+    });
+
+    /* =========================
+       Booking submission -> calls backend /api/book
+    ========================= */
+    document.getElementById('bookingForm').addEventListener('submit', async (ev)=>{
+      ev.preventDefault();
+      bookResult.textContent = '';
+      const name = guestNameEl.value.trim();
+      const email = guestEmailEl.value.trim();
+      const roomType = roomTypeEl.value;
+      const checkin = checkinEl.value;
+      const checkout = checkoutEl.value;
+      const adults = Number(adultsEl.value) || 1;
+      const children = Number(childrenEl.value) || 0;
+      const extraBed = Number(extraBedEl.value) || 0;
+      const ratePlanId = ratePlanEl.value;
+
+      // client validation
+      if(!name || !email || !roomType || !checkin || !checkout) {
+        bookResult.innerHTML = `<div style="color:#b91c1c">Fill required fields.</div>`;
+        return;
+      }
+      // compute price for record
+      const priceCalc = calculatePrice({ roomId: roomType, checkin, checkout, adults, children, extraBed, ratePlanId });
+      if(!priceCalc.ok) { bookResult.innerHTML = `<div style="color:#b91c1c">${priceCalc.message}</div>`; return; }
+
+      // Re-check availability before booking
+      statusMsg.textContent = 'Verifying availability...';
+      try {
+        const checkResp = await fetch('http://localhost:5000/api/check', {
+
+          method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ roomType, checkin, checkout })
+        });
+        const checkData = await checkResp.json();
+        if(!checkData.ok) {
+          statusMsg.innerHTML = `<span style="color:#b91c1c">${checkData.message}</span>`;
+          return;
+        }
+      } catch (err) {
+        statusMsg.innerHTML = `<span style="color:#b91c1c">Server error: ${err.message}</span>`;
+        return;
+      }
+
+      // submit booking
+      statusMsg.textContent = 'Confirming booking...';
+      try {
+        const resp = await fetch('http://localhost:5000/api/book', {
+
+          method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({
+            name, email, checkin, checkout, roomType, guests: adults + children, price: priceCalc.total.toFixed(2)
+          })
+        });
+        const data = await resp.json();
+        if(data.ok) {
+          statusMsg.innerHTML = `<span style="color:green">Booked! Ref: <strong>${data.ref}</strong></span>`;
+          bookResult.innerHTML = `<div class="muted">Booking saved. Reference: <strong>${data.ref}</strong></div>`;
+          // optionally reset some fields
+        } else {
+          statusMsg.innerHTML = `<span style="color:#b91c1c">${data.message}</span>`;
+        }
+      } catch (err) {
+        statusMsg.innerHTML = `<span style="color:#b91c1c">Server error: ${err.message}</span>`;
+      }
+    });
+
+    /* =========================
+       Check button
+    ========================= */
+    btnCheck.addEventListener('click', (e) => { checkAvailability(); });
+
+    /* =========================
+       Reset button
+    ========================= */
+    btnReset.addEventListener('click', () => {
+      document.getElementById('bookingForm').reset();
+      priceBox.innerHTML = '';
+      statusMsg.textContent = '';
+      bookResult.textContent = '';
+    });
+
+    /* =========================
+       Small compare demo (client only)
+    ========================= */
+    const compareBox = document.getElementById('compareBox');
+    compareBox.innerHTML = `
+      <div style="display:flex;gap:8px;flex-wrap:wrap">
+        <div style="min-width:180px" class="card">
+          <strong>Deluxe</strong><div class="muted">Best sea views</div>
+        </div>
+        <div style="min-width:180px" class="card">
+          <strong>Family</strong><div class="muted">Spacious suites</div>
+        </div>
+        <div style="min-width:180px" class="card">
+          <strong>Garden</strong><div class="muted">Cozy & affordable</div>
+        </div>
+      </div>
+    `;
+  </script>
+</body>
+</html>
