@@ -309,7 +309,8 @@
       }
       statusMsg.textContent = 'Checking availability...';
       try {
-        const resp = await fetch('http://localhost:5000/api/check', {
+        const resp = await fetch("https://haze-cove-hotel.onrender.com/api/check", {
+
 
           method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(payload)
         });
@@ -369,7 +370,8 @@
       // Re-check availability before booking
       statusMsg.textContent = 'Verifying availability...';
       try {
-        const checkResp = await fetch('http://localhost:5000/api/check', {
+        const checkResp = await fetch("https://haze-cove-hotel.onrender.com/api/check", {
+
 
           method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ roomType, checkin, checkout })
         });
@@ -386,7 +388,8 @@
       // submit booking
       statusMsg.textContent = 'Confirming booking...';
       try {
-        const resp = await fetch('http://localhost:5000/api/book', {
+        const resp = awaitfetch("https://haze-cove-hotel.onrender.com/api/book", {
+
 
           method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({
             name, email, checkin, checkout, roomType, guests: adults + children, price: priceCalc.total.toFixed(2)
