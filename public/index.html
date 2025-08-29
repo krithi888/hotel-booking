@@ -388,7 +388,7 @@
       // submit booking
       statusMsg.textContent = 'Confirming booking...';
       try {
-        const resp = awaitfetch("https://haze-cove-hotel.onrender.com/api/book", {
+        const resp = await fetch("https://haze-cove-hotel.onrender.com/api/book", {
 
 
           method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({
